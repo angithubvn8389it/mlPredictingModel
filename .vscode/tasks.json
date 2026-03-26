@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "run-catboost-training",
+			"type": "shell",
+			"command": "c:/Users/Admin/Documents/Thuchanh_CacNentangphattrienUD/demoSoftware/.venv/Scripts/python.exe",
+			"args": [
+				"-m",
+				"housing_price_prediction.train",
+				"--data",
+				"data/housing_price_dataset.csv"
+			],
+			"isBackground": false
+		}
+	]
+}
