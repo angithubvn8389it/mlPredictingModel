@@ -11,6 +11,7 @@ from sklearn.pipeline import Pipeline
 
 from housing_price_prediction.config import FEATURE_COLUMNS, TARGET_COLUMN
 from housing_price_prediction.data import load_dataset, split_features_target
+from housing_price_prediction.features import FeatureEngineer
 from housing_price_prediction.model import build_model
 
 
@@ -67,17 +68,22 @@ def train(
     df = load_dataset(data_path)
     X, y = split_features_target(df, target, FEATURE_COLUMNS)
 
+    # Apply outlier filter to the full dataset *before* splitting so that the
+    # test set shares the same price distribution as the training set.
+    # Filtering only the training split causes the model (trained on prices up
+    # to ~Q3+1.5*IQR) to be evaluated against extreme test values it was never
+    # exposed to, which collapses R² toward zero.
+    total_rows = int(len(X))
+    outliers_removed = 0
+    if remove_outliers:
+        X, y, outliers_removed = _remove_target_outliers_iqr(X, y)
+
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
         test_size=test_size,
         random_state=random_state,
     )
-
-    train_rows_before_filter = int(len(X_train))
-    outliers_removed = 0
-    if remove_outliers:
-        X_train, y_train, outliers_removed = _remove_target_outliers_iqr(X_train, y_train)
 
     categorical_features = X_train.select_dtypes(exclude=["number"]).columns.tolist()
     model = build_model(
@@ -87,7 +93,7 @@ def train(
 
     pipeline = Pipeline(
         steps=[
-            ("preprocessor", "passthrough"),
+            ("feature_engineer", FeatureEngineer()),
             ("model", model),
         ]
     )
@@ -102,11 +108,12 @@ def train(
         "r2": float(r2_score(y_test, predictions)),
         "model": type(model).__name__,
         "rows": int(len(df)),
+        "rows_after_filter": int(len(X)),
         "features": int(X.shape[1]),
-        "train_rows_before_filter": train_rows_before_filter,
-        "train_rows_after_filter": int(len(X_train)),
+        "train_rows": int(len(X_train)),
+        "test_rows": int(len(X_test)),
         "outliers_removed": outliers_removed,
-        "outlier_filter": "iqr_1.5" if remove_outliers else "disabled",
+        "outlier_filter": "iqr_1.5_before_split" if remove_outliers else "disabled",
         "selected_features": FEATURE_COLUMNS,
         "target": target,
         "trained_at_utc": datetime.now(timezone.utc).isoformat(),
