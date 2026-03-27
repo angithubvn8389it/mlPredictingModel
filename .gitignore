@@ -5,5 +5,8 @@ venv/
 artifacts/
 *.pkl
 *.joblib
+catboost_info/
+data.dat
 *.csv
+!data/housing_price_dataset.csv
 !.gitkeep

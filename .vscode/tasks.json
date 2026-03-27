@@ -4,13 +4,18 @@
 		{
 			"label": "run-catboost-training",
 			"type": "shell",
-			"command": "c:/Users/Admin/Documents/Thuchanh_CacNentangphattrienUD/demoSoftware/.venv/Scripts/python.exe",
+			"command": "python",
 			"args": [
 				"-m",
 				"housing_price_prediction.train",
 				"--data",
 				"data/housing_price_dataset.csv"
 			],
+			"options": {
+				"env": {
+					"PYTHONPATH": "${workspaceFolder}/src"
+				}
+			},
 			"isBackground": false
 		}
 	]

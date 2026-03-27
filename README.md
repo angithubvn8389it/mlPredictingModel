@@ -10,7 +10,9 @@ It supports:
 ## Project Structure
 
 ```
-demoSoftware/
+mlPredictingModel/
+  data/
+    housing_price_dataset.csv
   src/housing_price_prediction/
     __init__.py
     config.py
@@ -20,6 +22,7 @@ demoSoftware/
     train.py
     evaluate.py
     predict.py
+  streamlit_app.py
   requirements.txt
   .gitignore
   README.md
@@ -27,9 +30,17 @@ demoSoftware/
 
 ## 1. Setup
 
-```bash
+**Windows (PowerShell)**
+```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+**macOS / Linux**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -46,14 +57,20 @@ pip install -r requirements.txt
 Example dataset path:
 
 ```text
-data/housing.csv
+data/housing_price_dataset.csv
 ```
 
 ## 3. Train the Model
 
-```bash
+**Windows (PowerShell)**
+```powershell
 $env:PYTHONPATH = "src"
 python -m housing_price_prediction.train --data data/housing_price_dataset.csv
+```
+
+**macOS / Linux**
+```bash
+PYTHONPATH=src python -m housing_price_prediction.train --data data/housing_price_dataset.csv
 ```
 
 Optional arguments:
@@ -65,18 +82,30 @@ Optional arguments:
 
 ## 4. Evaluate the Trained Model
 
-```bash
+**Windows (PowerShell)**
+```powershell
 $env:PYTHONPATH = "src"
 python -m housing_price_prediction.evaluate --data data/housing_price_dataset.csv --model artifacts/model.joblib
+```
+
+**macOS / Linux**
+```bash
+PYTHONPATH=src python -m housing_price_prediction.evaluate --data data/housing_price_dataset.csv --model artifacts/model.joblib
 ```
 
 ## 5. Predict on New Data
 
 Use a CSV that has the same feature columns as training data (target column is not required).
 
-```bash
+**Windows (PowerShell)**
+```powershell
 $env:PYTHONPATH = "src"
 python -m housing_price_prediction.predict --data data/new_houses.csv --model artifacts/model.joblib --out artifacts/predictions.csv
+```
+
+**macOS / Linux**
+```bash
+PYTHONPATH=src python -m housing_price_prediction.predict --data data/new_houses.csv --model artifacts/model.joblib --out artifacts/predictions.csv
 ```
 
 ## Outputs
@@ -93,9 +122,15 @@ python -m housing_price_prediction.predict --data data/new_houses.csv --model ar
 
 ## 6. Run Streamlit Web App
 
-```bash
+**Windows (PowerShell)**
+```powershell
 $env:PYTHONPATH = "src"
 streamlit run streamlit_app.py
+```
+
+**macOS / Linux**
+```bash
+PYTHONPATH=src streamlit run streamlit_app.py
 ```
 
 The web app supports:
